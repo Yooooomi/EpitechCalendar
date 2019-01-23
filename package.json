@@ -1,0 +1,16 @@
+{
+  "name": "epi_calendar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scheduler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "googleapis": "^27.0.0",
+    "request": "^2.88.0"
+  }
+}
