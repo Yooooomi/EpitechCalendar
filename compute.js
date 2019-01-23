@@ -93,8 +93,8 @@ const computeJSON = async activities => {
     try {
         activities = await Promise.all(activities);
     } catch (e) {
-        Logger.log('Failed to get all activities in notifications');
-        Logger.error(e);
+        Logger.error('Failed to get all activities in notifications');
+        Logger.printError(e);
     }
     activities.forEach(async e => {
         const intraEvents = e.data.events.filter(e => e.user_status === 'present');
@@ -120,7 +120,7 @@ const computeJSON = async activities => {
             }
             try {
                 await recordEvent(eventObj);
-                Logger.log('Event created for', e.data.title);
+                Logger.done('Event created for', e.data.title);
             } catch (e) {
                 Logger.log('Failed to record an event for', e.data.title);
                 Logger.error(e);

@@ -64,6 +64,7 @@ async function main() {
     Logger.setErrorToFile(true);
     Logger.log('Start of program, initializing Google tokens');
     await initGoogle();
+    Logger.done('Initialized Google tokens');
     Logger.log(`Starting loop, syncing every ${REFRESH / 1000 / 60} minutes`)
     while (true) {
         Logger.log('Syncing...')

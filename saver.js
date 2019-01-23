@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+let init = false;
 let lastInfos = null;
 
 const loadInfos = () => {
@@ -17,7 +18,14 @@ const saveInfos = infos => {
     fs.writeFileSync('./config/save.json', JSON.stringify(lastInfos));
 }
 
-const getLastInfos = () => lastInfos;
+const getLastInfos = () => {
+    if (!init && !lastInfos) {
+        init = true;
+        lastInfos = loadInfos();
+        return lastInfos;
+    }
+    return lastInfos;
+}
 
 module.exports = {
     loadInfos,
