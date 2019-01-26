@@ -97,11 +97,11 @@ const computeJSON = async activities => {
         Logger.printError(e);
     }
     activities.forEach(async e => {
-        const intraEvents = e.data.events.filter(e => e.user_status === 'present');
+        const intraEvents = e.data.events.filter(e => e.user_status === 'present' || e.already_register !== null);
         const url = e.config.url;
 
         // If no event is linked to the registration or the user isn't registered to any
-        if (!intraEvents || intraEvents.length || !intraEvents.some(e => e.user_status == 'present')) return;
+        if (!intraEvents || !intraEvents.length) return;
         // If an upcoming event already has the same name then dont do anything
         if (events.length && events.some(g_event => g_event.summary === e.data.title)) {
             return;
