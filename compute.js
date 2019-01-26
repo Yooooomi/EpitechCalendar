@@ -113,7 +113,7 @@ const computeJSON = async activities => {
 
             const eventObj = {
                 title: e.data.title,
-                desc: url,
+                desc: e.data.module_title + '\n\n' + url,
                 location: intraEvent.location,
                 timeStart: new Date(intraEvent.begin),
                 timeEnd: new Date(intraEvent.end),
