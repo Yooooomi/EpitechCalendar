@@ -36,7 +36,7 @@ const initGoogle = async () => {
     }
     auth = oAuth2Client;
     calendar = google.calendar({ version: 'v3', auth });
-}
+};
 
 // Load client secrets from a local file.
 
@@ -55,7 +55,7 @@ const listEvents = (dateStart, dateEnd) => new Promise((s, f) => {
         const events = res.data.items;
         s(events);
     });
-})
+});
 
 const recordEvent = async event => new Promise((s, f) => {
     calendar.events.insert({
@@ -80,7 +80,7 @@ const recordEvent = async event => new Promise((s, f) => {
     }, (err, res) => {
         if (err) return f(err);
         s(res);
-    })
+    });
 });
 
 const compute = async (activities, soutenances) => {
@@ -184,7 +184,7 @@ const computeActivities = async (activities, events) => {
             }
         });
     });
-}
+};
 
 module.exports = {
     compute,

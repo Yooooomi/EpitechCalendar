@@ -11,12 +11,12 @@ const loadInfos = () => {
     } catch (e) {
         return ({});
     }
-}
+};
 
 const saveInfos = infos => {
     lastInfos = { ...lastInfos, ...infos };
     fs.writeFileSync('./config/save.json', JSON.stringify(lastInfos));
-}
+};
 
 const getLastInfos = () => {
     if (!init && !lastInfos) {
@@ -25,7 +25,7 @@ const getLastInfos = () => {
         return lastInfos;
     }
     return lastInfos;
-}
+};
 
 module.exports = {
     loadInfos,
