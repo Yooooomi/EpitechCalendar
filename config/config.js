@@ -7,6 +7,7 @@ const config = {
     ERROR_FILE: `${__dirname}/errors`,
     REFRESH: 1000 * 60 * 30,
     REMINDERS: [24 * 60, 60, 10],
+    LOGIN: 'timothee.boussus@epitech.eu',
 }
 
 module.exports = config;

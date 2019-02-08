@@ -1,7 +1,7 @@
 const saver = require('./saver');
 const { axios } = require('./api');
 const { REFRESH } = require('./config/config');
-const { computeJSON, initGoogle } = require('./compute')
+const { compute, initGoogle } = require('./compute')
 const { Logger } = require('./logger');
 
 const checkReturn = {
@@ -46,7 +46,11 @@ const check = async () => {
             }
         });
         const activities = answer.data.history.filter(e => e.title.startsWith('You have joined'));
-        computeJSON(activities);
+        const soutenances = answer.data.history.filter(e => e.title.startsWith('You have registered'));
+        compute(activities, soutenances);
+        const projects = answer.data.history.filter(e => e.startsWith("You have subscribed") ||
+        (e.startsWith("Your project group") && e.includes("complete and validated")));
+        computeJSON
     } catch (e) {
         if (e.response && e.response.status === 401) {
             Logger.warn('Epitech token not valid anymore');

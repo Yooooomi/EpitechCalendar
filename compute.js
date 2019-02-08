@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { google } = require('googleapis');
 const { get } = require('./api');
-const { TOKEN_PATH, CLIENT_ID_PATH, REMINDERS } = require('./config/config');
+const { TOKEN_PATH, CLIENT_ID_PATH, REMINDERS, LOGIN } = require('./config/config');
 const getAccessToken = require('./getAccessToken');
 const { Logger } = require('./logger');
 
@@ -83,8 +83,59 @@ const recordEvent = async event => new Promise((s, f) => {
     })
 });
 
-const computeJSON = async activities => {
+const compute = (activities, soutenances) => {
     const events = await listEvents((new Date()).toISOString(), (new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)).toISOString());
+
+    computeActivities(activities, events);
+    computeSoutenances(soutenances, events);
+};
+
+const computeSoutenances = async (soutenances, events) => {
+    soutenances = soutenances.map(e => {
+        let yaya = e.title.split('href="')[1];
+        yaya = yaya.substr(0, yaya.indexOf('"'));
+        return get(yaya);
+    });
+    try {
+        soutenances = await Promise.all(soutenances);
+    } catch (e) {
+        Logger.error('Failed to get all soutenances in notifications');
+        Logger.printError(e);
+    }
+    soutenances.forEach(e => {
+        const sout = e.data;
+
+        if (!sout.student_registered) return Logger.error(`Registered to soutenance indicating not registered (${sout.title})`);
+
+        const location = sout.slots.room;
+        const registeredSlot = sout.slots.slots.find(slot => slot.master.login === LOGIN || slot.members.some(mbs => mbs.login === LOGIN));
+
+        if (!registeredSlot) return Logger.error(`No slot on registered soutenance (${sout.title})`);
+        if (events.length && events.some(g_event => g_event.summary === registeredSlot.acti_title)) return;
+
+        const startEvent = new Date(registeredSlot.date);
+
+        // Already past event
+        if (startEvent < Date.now()) return;
+
+        const eventObj = {
+            title: registeredSlot.acti_title,
+            desc: sout.project.title + '\n\n' + e.config.url,
+            location: location,
+            timeStart: startEvent,
+            timeEnd: new Date(startEvent.getTime() + registeredSlot.duration * 60 * 1000),
+        }
+        try {
+            await recordEvent(eventObj);
+            Logger.done('Event of type soutenance created for', registeredSlot.acti_title);
+        } catch (e) {
+            Logger.log('Failed to record an event for', registeredSlot.acti_title);
+            Logger.error(e);
+        }
+    });
+};
+
+const computeActivities = async (activities, events) => {
     activities = activities.map(e => {
         let yaya = e.title.split('href="')[1];
         yaya = yaya.substr(0, yaya.indexOf('"'));
@@ -120,7 +171,7 @@ const computeJSON = async activities => {
             }
             try {
                 await recordEvent(eventObj);
-                Logger.done('Event created for', e.data.title);
+                Logger.done('Event of type activity created for', e.data.title);
             } catch (e) {
                 Logger.log('Failed to record an event for', e.data.title);
                 Logger.error(e);
@@ -130,6 +181,6 @@ const computeJSON = async activities => {
 }
 
 module.exports = {
-    computeJSON,
+    compute,
     initGoogle,
 };
