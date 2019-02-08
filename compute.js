@@ -83,7 +83,7 @@ const recordEvent = async event => new Promise((s, f) => {
     })
 });
 
-const compute = (activities, soutenances) => {
+const compute = async (activities, soutenances) => {
     const events = await listEvents((new Date()).toISOString(), (new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)).toISOString());
 
     computeActivities(activities, events);
@@ -102,17 +102,23 @@ const computeSoutenances = async (soutenances, events) => {
         Logger.error('Failed to get all soutenances in notifications');
         Logger.printError(e);
     }
-    soutenances.forEach(e => {
+    soutenances.forEach(async e => {
         const sout = e.data;
 
         if (!sout.student_registered) return Logger.error(`Registered to soutenance indicating not registered (${sout.title})`);
 
-        const location = sout.slots.room;
-        const registeredSlot = sout.slots.slots.find(slot => slot.master.login === LOGIN || slot.members.some(mbs => mbs.login === LOGIN));
+        const registeredSlot = (function () {
+            for (let i in sout.slots) {
+                // Checking for slot master if we have access to data
+                const tmp = sout.slots[i].slots.find(slot => slot.master && (slot.master.login === LOGIN || slot.members.some(mbs => mbs.login === LOGIN)));
+                if (tmp) return tmp;
+            }
+        })();
 
         if (!registeredSlot) return Logger.error(`No slot on registered soutenance (${sout.title})`);
         if (events.length && events.some(g_event => g_event.summary === registeredSlot.acti_title)) return;
 
+        const location = sout.slots.room;
         const startEvent = new Date(registeredSlot.date);
 
         // Already past event
