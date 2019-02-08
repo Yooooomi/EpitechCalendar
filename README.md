@@ -11,7 +11,7 @@ You need several things to get it working:
     * Put it in /config/client_id.json
 * `config.json`: You need to fill the required informations in this file
     * `REFRESH`: Application's refresh rate
-    * `REMINDERS`: Array of 'minutes', representing the reminders on your phone
+    * `REMINDERS`: Array of 'minutes', representing the reminders on your phone before the event
     * `LOGIN`: Your Epitech E-mail address
     * `AUTOLOGIN`: Your autologin link (begins with `/auth-`)
 
@@ -29,3 +29,7 @@ You need several things to get it working:
 | Activities        |        X        |                            |          |
 | Soutenances       |                 |              X             |          |
 | Projects Deadline |                 |                            |     X    |
+
+## Miscellaneous
+
+Hosting it on AWS really costs 0$ :)

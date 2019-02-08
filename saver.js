@@ -14,7 +14,7 @@ const loadInfos = () => {
 }
 
 const saveInfos = infos => {
-    lastInfos = {...lastInfos, ...infos};
+    lastInfos = { ...lastInfos, ...infos };
     fs.writeFileSync('./config/save.json', JSON.stringify(lastInfos));
 }
 
