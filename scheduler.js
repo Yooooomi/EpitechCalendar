@@ -1,6 +1,6 @@
 const saver = require('./saver');
 const { axios } = require('./api');
-const { REFRESH } = require('./config/config');
+const { REFRESH, AUTOLOGIN } = require('./config/config');
 const { compute, initGoogle } = require('./compute')
 const { Logger } = require('./logger');
 
@@ -14,7 +14,7 @@ const sleep = ms => new Promise((res, _) => setTimeout(res, ms));
 
 const login = async () => {
     try {
-        const answer = await axios.get('/auth-6091d7718eb2a31e89e0ba5c71f804d34ff98e15', {
+        const answer = await axios.get(AUTOLOGIN, {
             maxRedirects: 0,
             validateStatus: status => status === 302,
         });
@@ -45,9 +45,12 @@ const check = async () => {
                 Cookie: cookies,
             }
         });
-        const activities = answer.data.history.filter(e => e.title.startsWith('You have joined'));
-        const soutenances = answer.data.history.filter(e => e.title.startsWith('You have registered'));
-        compute(activities, soutenances);
+        const objs = answer.data.history.reduce((acc, curr) => {
+            if (curr.title.startsWith('You have joined')) acc.activities.push(curr);
+            else if (curr.title.startsWith('You have registered')) acc.soutenances.push(curr);
+            return acc;
+        }, { activities: [], soutenances: [] });
+        compute(objs.activities, objs.soutenances);
     } catch (e) {
         if (e.response && e.response.status === 401) {
             Logger.warn('Epitech token not valid anymore');
