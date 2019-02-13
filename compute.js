@@ -57,7 +57,7 @@ const listEvents = (dateStart, dateEnd) => new Promise((s, f) => {
     });
 });
 
-const recordEvent = async event => new Promise((s, f) => {
+const recordEvent = event => new Promise((s, f) => {
     calendar.events.insert({
         calendarId: 'primary',
         resource: {
@@ -66,11 +66,11 @@ const recordEvent = async event => new Promise((s, f) => {
             description: event.desc,
             start: {
                 dateTime: event.timeStart,
-                timeZone: 'Europe/Paris'
+                timeZone: 'Europe/London'
             },
             end: {
                 dateTime: event.timeEnd,
-                timeZone: 'Europe/Paris'
+                timeZone: 'Europe/London'
             },
             reminders: {
                 useDefault: false,

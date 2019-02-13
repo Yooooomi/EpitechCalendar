@@ -9,7 +9,7 @@ const loadInfos = () => {
         data = data.toString();
         return JSON.parse(data);
     } catch (e) {
-        return ({});
+        return null;
     }
 };
 

@@ -65,7 +65,7 @@ const check = async () => {
 }
 
 async function main() {
-    Logger.setErrorToFile(true);
+    Logger.setErrorToFile(false);
     Logger.log('Start of program, initializing Google tokens');
     await initGoogle();
     Logger.done('Initialized Google tokens');
@@ -74,8 +74,8 @@ async function main() {
         Logger.log('Syncing...')
         const res = await check();
         if (res !== checkReturn.RETRY) {
-            await sleep(REFRESH);
             Logger.log('Sleeping...');
+            await sleep(REFRESH);
         }
     }
 }
