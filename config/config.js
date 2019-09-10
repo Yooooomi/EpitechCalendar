@@ -10,7 +10,7 @@ const config = {
 
     // Epitech credentials
     LOGIN: 'timothee.boussus@epitech.eu',
-    AUTOLOGIN: '/auth-6091d7718eb2a31e89e0ba5c71f804d34ff98e15',
+    AUTOLOGIN: '/auth-05f1d03357f9660c3dd0438f800cea275a15d606',
 
     /*
     -----

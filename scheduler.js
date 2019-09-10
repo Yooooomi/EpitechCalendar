@@ -46,8 +46,9 @@ const check = async () => {
             }
         });
         const objs = answer.data.history.reduce((acc, curr) => {
-            if (curr.title.startsWith('You have joined')) acc.activities.push(curr);
-            else if (curr.title.startsWith('You have registered')) acc.soutenances.push(curr);
+            if (curr.title.startsWith('You have joined') || curr.title.startsWith('You have been force-registered')) acc.activities.push(curr);
+            else if (curr.title.startsWith('You have registered') || curr.title.startsWith('Your group has been force-registered to the appointment slot'))
+                acc.soutenances.push(curr);
             return acc;
         }, { activities: [], soutenances: [] });
         compute(objs.activities, objs.soutenances);

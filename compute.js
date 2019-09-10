@@ -115,7 +115,10 @@ const computeSoutenances = async (soutenances, events) => {
             }
         })();
 
-        if (!registeredSlot) return Logger.error(`No slot on registered soutenance (${sout.title})`);
+        if (!registeredSlot) {
+            console.log(sout);
+            return Logger.error(`No slot on registered soutenance (${sout.title})`);
+        }
         if (events.length && events.some(g_event => g_event.summary === registeredSlot.acti_title)) return;
 
         const location = sout.slots.room;
