@@ -3,7 +3,7 @@
 const config = {
 
     // Refresh rate of the application
-    REFRESH: 1000 * 60 * 30,
+    REFRESH: 1000 * 5,// * 60 * 30,
 
     // Reminders in minutes
     REMINDERS: [24 * 60, 60, 10],

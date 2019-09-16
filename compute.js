@@ -40,22 +40,32 @@ const initGoogle = async () => {
 
 // Load client secrets from a local file.
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
-const listEvents = (dateStart, dateEnd) => new Promise((s, f) => {
+const getPageEvents = (dateStart, dateEnd, token) => new Promise((s, f) => {
     calendar.events.list({
         calendarId: 'primary',
         timeMin: dateStart,
         timeMax: dateEnd,
         maxResults: 10,
+        pageToken: token,
     }, (err, res) => {
         if (err) return f(err);
-        const events = res.data.items;
-        s(events);
+        s(res);
     });
-});
+})
+
+/**
+ * Lists the next 10 events on the user's primary calendar.
+ * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+ */
+const listEvents = async (dateStart, dateEnd) => {
+    let lastRes = null;
+    const events = [];
+    do {
+        lastRes = await getPageEvents(dateStart, dateEnd, lastRes ? lastRes.data.nextPageToken : undefined);
+        events.push(...lastRes.data.items);
+    } while (lastRes.data.nextPageToken);
+    return events;
+};
 
 const recordEvent = event => new Promise((s, f) => {
     calendar.events.insert({
@@ -84,7 +94,9 @@ const recordEvent = event => new Promise((s, f) => {
 });
 
 const compute = async (activities, soutenances) => {
-    const events = await listEvents((new Date()).toISOString(), (new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)).toISOString());
+    const startDate = (new Date()).toISOString();
+    const endDate = (new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)).toISOString();
+    const events = await listEvents(startDate, endDate);
 
     computeActivities(activities, events);
     computeSoutenances(soutenances, events);
@@ -116,7 +128,6 @@ const computeSoutenances = async (soutenances, events) => {
         })();
 
         if (!registeredSlot) {
-            console.log(sout);
             return Logger.error(`No slot on registered soutenance (${sout.title})`);
         }
         if (events.length && events.some(g_event => g_event.summary === registeredSlot.acti_title)) return;
@@ -136,7 +147,7 @@ const computeSoutenances = async (soutenances, events) => {
         }
         try {
             await recordEvent(eventObj);
-            Logger.done('Event of type soutenance created for', registeredSlot.acti_title);
+            Logger.done('Event of type soutenance created for', registeredSlot.acti_title, 'at', registeredSlot);
         } catch (e) {
             Logger.log('Failed to record an event for', registeredSlot.acti_title);
             Logger.error(e);
